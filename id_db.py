@@ -60,10 +60,10 @@ class FeedProdStore(Base):
 	price = Column(Numeric) 									# Цена
 	price_old = Column(Numeric)
 	site = Column(Text)  										# сайт наименование
-	time_load = Column(TIMESTAMP, server_default=text('NOW()'))  # время загрузки
+	time_load = Column(TIMESTAMP, server_default=text('NOW()')) # время загрузки
 	time_xml = Column(BigInteger)  # время xml(UTC)
 	user_load = Column(Text)
-	param_name = Column(Text, primary_key=True)					# info from "params" xml tag, name of the product subtype
+	param_name = Column(Text)									# info from "params" xml tag, name of the product subtype
 	param_available = Column(Boolean)							# is the subtype available?
 	param_price = Column(Numeric)								# its price
 	param_price_old = Column(Numeric)							# its old price
@@ -117,7 +117,7 @@ def store_product_data(site, product, xml_timestamp, small_img_path, large_img_p
 		session.add(db_prod)
 		session.commit()
 	else:
-		db_prod.available = to_bool(get_child(product, "available"))
+		db_prod.available = to_bool(get_child(product, "avalible"))
 		db_prod.code = code
 		db_prod.name = get_child(product, "name")
 		db_prod.url = get_child(product, "url")
@@ -137,7 +137,7 @@ def store_product_data(site, product, xml_timestamp, small_img_path, large_img_p
 def store_product_sizes(site, product_info, xml_timestamp):
 	code = get_child(product_info, "code")
 
-	params = get_child(product_info, "params")
+	params = product_info.find("params")
 	if params:
 		for param in params:
 			param_name = param.get("name")
@@ -162,9 +162,10 @@ def store_product_sizes(site, product_info, xml_timestamp):
 									.first()
 
 			if not db_prod_size_entry:
-				db_prod_size_entry = FeedProdStore(available=get_child(product_info, "avalible"),
+				db_prod_size_entry = FeedProdStore(available=to_bool(get_child(product_info, "avalible")),
 										code=code,
 										name=get_child(product_info, "name"),
+										url=get_child(product_info, "url"),
 										price=int(get_child(product_info, "price")),
 										price_old=int(get_child(product_info, "price_old")),
 										site=site.name,
@@ -177,9 +178,10 @@ def store_product_sizes(site, product_info, xml_timestamp):
 				session.add(db_prod_size_entry)
 				session.commit()
 			else:
-				db_prod_size_entry.available=get_child(product_info, "avalible")
+				db_prod_size_entry.available=to_bool(get_child(product_info, "avalible"))
 				db_prod_size_entry.code=code
 				db_prod_size_entry.name=get_child(product_info, "name")
+				db_prod_size_entry.url = get_child(product_info, "url")
 				db_prod_size_entry.price=int(get_child(product_info, "price"))
 				db_prod_size_entry.price_old=int(get_child(product_info, "price_old"))
 				db_prod_size_entry.site=site.name
@@ -190,5 +192,45 @@ def store_product_sizes(site, product_info, xml_timestamp):
 				db_prod_size_entry.param_price=param_price
 				db_prod_size_entry.param_price_old=param_price_old
 				session.commit()
+	else:
+		param_name = None
+		param_available = to_bool(get_child(product_info, "avalible"))
+		param_price = int(get_child(product_info, "price"))
+		param_price_old = int(get_child(product_info, "price_old"))
 
+		db_prod_size_entry = session.query(FeedProdStore) \
+			.filter_by(code=code, param_name=param_name) \
+			.first()
+
+		if not db_prod_size_entry:
+			db_prod_size_entry = FeedProdStore(available=to_bool(get_child(product_info, "avalible")),
+											   code=code,
+											   name=get_child(product_info, "name"),
+											   url = get_child(product_info, "url"),
+											   price=int(get_child(product_info, "price")),
+											   price_old=int(get_child(product_info, "price_old")),
+											   site=site.name,
+											   time_xml=xml_timestamp,
+											   param_name=param_name,
+											   param_available=param_available,
+											   param_price=param_price,
+											   param_price_old=param_price_old)
+
+			session.add(db_prod_size_entry)
+			session.commit()
+		else:
+			db_prod_size_entry.available = to_bool(get_child(product_info, "avalible"))
+			db_prod_size_entry.code = code
+			db_prod_size_entry.name = get_child(product_info, "name")
+			db_prod_size_entry.url = get_child(product_info, "url")
+			db_prod_size_entry.price = int(get_child(product_info, "price"))
+			db_prod_size_entry.price_old = int(get_child(product_info, "price_old"))
+			db_prod_size_entry.site = site.name
+			db_prod_size_entry.time_xml = xml_timestamp
+			db_prod_size_entry.time_load = datetime.datetime.now()
+			db_prod_size_entry.param_name = param_name
+			db_prod_size_entry.param_available = param_available
+			db_prod_size_entry.param_price = param_price
+			db_prod_size_entry.param_price_old = param_price_old
+			session.commit()
 

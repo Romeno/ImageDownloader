@@ -8,7 +8,11 @@ def get_child(element, tag_name):
 	logger = logging.getLogger()
 
 	try:
-		return element.find(tag_name).text
+		el = element.find(tag_name)
+		if el is None:
+			return None
+		else:
+			return el.text
 	except etree.LxmlError as e:
 		logger.warning("Cannot get {} from xml".format(tag_name))
 		logger.exception("Error getting '{}' from xml".format(tag_name))

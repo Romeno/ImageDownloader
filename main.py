@@ -12,7 +12,7 @@ import id_db
 from id_common import get_child
 
 program_name = "ImageDownloader"
-crawl_delay = 1
+crawl_delay = 0.15
 
 
 def init_logger():
@@ -40,7 +40,7 @@ def init_logger():
 		},
 		'root': {
 			'handlers': ['h'],
-			'level': logging.DEBUG,
+			'level': logging.INFO,
 		},
 	}
 
@@ -82,10 +82,10 @@ def get_product_info(site, product):
 		if resp.ok:
 			root = etree.fromstring(resp.content)
 			if len(root) == 0 or len(root[0]) == 0:
-				logger.error("Empty xml of product info for some reason for site {}".format(site.name))
-				return None, None
+				logger.warning("Empty xml of product info for some reason for site {}".format(site.name))
+				return None
 
-			return root[0][0], root.get("timestamp")
+			return root[0][0]
 		else:
 			logger.error("Error {} when getting {} product {}".format(resp.status_code, site.name, code))
 			return None
@@ -180,7 +180,7 @@ def main():
 				if product_info:
 					id_db.store_product_sizes(site, product_info, xml_timestamp)
 				else:
-					logger.error("Cannot get product sizes for product code {}, site {}".format(get_child(product, "code"), site.name))
+					logger.warning("Cannot get product sizes for product code {}, site {}".format(get_child(product, "code"), site.name))
 
 			logger.info("Finished site {}".format(site.name))
 
