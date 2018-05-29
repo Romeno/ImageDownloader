@@ -143,19 +143,25 @@ def store_product_sizes(site, product_info, xml_timestamp):
 			param_name = param.get("name")
 			param_available = param.get("avalible")
 			param_price = param.get("price")
-			if not param_price or param_price=="0":
-				param_price = int(get_child(product_info, "price"))
-			else:
-				param_price = int(param_price)
+			try:
+				if not param_price or param_price=="0":
+					param_price = int(get_child(product_info, "price"))
+				else:
+					param_price = int(param_price)
+			except ValueError as e:
+				param_price = 0
 
 			if param_available:
 				param_available = to_bool(param_available)
 
 			param_price_old = param.get("price_old")
-			if not param_price_old or param_price_old=="0":
-				param_price_old = int(get_child(product_info, "price_old"))
-			else:
-				param_price_old = int(param_price_old)
+			try:
+				if not param_price_old or param_price_old=="0":
+					param_price_old = int(get_child(product_info, "price_old"))
+				else:
+					param_price_old = int(param_price_old)
+			except ValueError as e:
+				param_price_old = 0
 
 			db_prod_size_entry = session.query(FeedProdStore)\
 									.filter_by(code=code, param_name=param_name)\
