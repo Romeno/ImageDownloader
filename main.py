@@ -164,25 +164,29 @@ def main():
 		for site in id_db.get_sites():
 			logger.info("Started site {}".format(site.name))
 
-			products, xml_timestamp = get_products(site)
-			if products is None:
-				logger.error("Skipping site {} due to error while getting product list".format(site.name))
-				continue
+			try:
+				products, xml_timestamp = get_products(site)
+				if products is None:
+					logger.error("Skipping site {} due to error while getting product list".format(site.name))
+					continue
 
-			for product in products:
-				paths = download_images(site, product, base_path)
-				if paths:
-					id_db.store_product_data(site, product, xml_timestamp, *paths)
-				else:
-					logger.warning("Images were not downloaded for product code {}, site {}".format(get_child(product, "code"), site.name))
+				for product in products:
+					paths = download_images(site, product, base_path)
+					if paths:
+						id_db.store_product_data(site, product, xml_timestamp, *paths)
+					else:
+						logger.warning("Images were not downloaded for product code {}, site {}".format(get_child(product, "code"), site.name))
 
-				product_info = get_product_info(site, product)
-				if product_info:
-					id_db.store_product_sizes(site, product_info, xml_timestamp)
-				else:
-					logger.warning("Cannot get product sizes for product code {}, site {}".format(get_child(product, "code"), site.name))
+					product_info = get_product_info(site, product)
+					if product_info:
+						id_db.store_product_sizes(site, product_info, xml_timestamp)
+					else:
+						logger.warning("Cannot get product sizes for product code {}, site {}".format(get_child(product, "code"), site.name))
 
-			logger.info("Finished site {}".format(site.name))
+				logger.info("Finished site {}".format(site.name))
+			except Exception as e:
+				logger.exception("Exception during {} run".format(program_name))
+				logger.error("Skipping site {}".format(site.name))
 
 	except Exception as e:
 		logger.exception("Exception during {} run".format(program_name))
