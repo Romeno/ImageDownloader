@@ -51,7 +51,7 @@ def get_products(site):
 	logger = logging.getLogger()
 
 	try:
-		resp = requests.get("http://{}/feedxml_crm.php".format(site.name))
+		resp = requests.get("http://{}/feedxml_crm.php".format(site.name), verify=False)
 		if resp.ok:
 			root = etree.fromstring(resp.content)
 			if len(root) == 0:
@@ -78,7 +78,7 @@ def get_product_info(site, product):
 
 	try:
 		time.sleep(crawl_delay)
-		resp = requests.get("http://{}/feedxml_crm.php?code={}".format(site.name, code))
+		resp = requests.get("http://{}/feedxml_crm.php?code={}".format(site.name, code), verify=False)
 		if resp.ok:
 			root = etree.fromstring(resp.content)
 			if len(root) == 0 or len(root[0]) == 0:
@@ -108,7 +108,7 @@ def download_images(site, product, base_path):
 
 		if img_small:
 			time.sleep(crawl_delay)
-			resp = requests.get("http://{}/{}".format(site.name, img_small))
+			resp = requests.get("http://{}/{}".format(site.name, img_small), verify=False)
 
 			if resp.ok:
 				if not img_small.startswith("/"):
@@ -124,7 +124,7 @@ def download_images(site, product, base_path):
 
 		if img_large:
 			time.sleep(crawl_delay)
-			resp = requests.get("http://{}/{}".format(site.name, img_large))
+			resp = requests.get("http://{}/{}".format(site.name, img_large), verify=False)
 
 			if resp.ok:
 				if not img_large.startswith("/"):
