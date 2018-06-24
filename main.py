@@ -82,7 +82,7 @@ def get_product_info(site, product):
 		if resp.ok:
 			root = etree.fromstring(resp.content)
 			if len(root) == 0 or len(root[0]) == 0:
-				logger.warning("Empty xml of product info for some reason for site {}".format(site.name))
+				logger.info("Empty xml for site {}".format(site.name))
 				return None
 
 			return root[0][0]
@@ -181,7 +181,7 @@ def main():
 					if product_info:
 						id_db.store_product_sizes(site, product_info, xml_timestamp)
 					else:
-						logger.warning("Cannot get product sizes for product code {}, site {}".format(get_child(product, "code"), site.name))
+						logger.info("Cannot get product sizes for product code {}, site {}".format(get_child(product, "code"), site.name))
 
 				logger.info("Finished site {}".format(site.name))
 			except Exception as e:
