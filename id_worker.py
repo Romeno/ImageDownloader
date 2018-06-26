@@ -15,8 +15,8 @@ from id_config import program_name, base_worker_logger_name, crawl_delay
 
 
 class ImageDownloader:
-	def __init__(self, site, base_path):
-		self.site_name = site.name
+	def __init__(self, site_name, base_path):
+		self.site_name = site_name
 		self.base_path = base_path
 		self.worker_logger_name = "{}{}.log".format(base_worker_logger_name, self.site_name)
 
@@ -38,6 +38,7 @@ class ImageDownloader:
 				return
 
 			processed_codes = id_db.get_product_codes_for_site(self.site_name)
+			processed_codes = [c[0] for c in processed_codes]
 			skip_count = 0
 
 			for product in products:
@@ -70,6 +71,8 @@ class ImageDownloader:
 		except Exception as e:
 			logger.exception("Exception during {} run".format(program_name))
 			logger.error("Skipping site {}".format(self.site_name))
+		finally:
+			id_db.disconnect()
 
 	def get_products(self, site_name):
 		logger = logging.getLogger(self.worker_logger_name)

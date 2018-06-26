@@ -88,6 +88,19 @@ def connect(db_username, db_password, db_host, db_name):
 	session = DBSession()
 
 
+def disconnect():
+	global engine
+	global DBSession
+	global session
+
+	session.close()
+	engine.dispose()
+
+	session = None
+	DBSession = None
+	engine = None
+
+
 def create_db():
 	Base.metadata.create_all(engine)
 
@@ -102,7 +115,7 @@ def get_product_codes_for_site(site_name):
 
 def store_product_data(site_name, product, xml_timestamp, small_img_path, large_img_path):
 	code = get_child(product, "code")
-	db_prod = session.query(FeedStore).filter_by(code=code).first()
+	db_prod = session.query(FeedStore).filter_by(site=site_name, code=code).first()
 
 	if not db_prod:
 		db_prod = FeedStore(available=to_bool(get_child(product, "avalible")),
@@ -168,7 +181,7 @@ def store_product_sizes(site_name, product_info, xml_timestamp):
 				param_price_old = 0
 
 			db_prod_size_entry = session.query(FeedProdStore)\
-									.filter_by(code=code, param_name=param_name)\
+									.filter_by(site=site_name, code=code, param_name=param_name)\
 									.first()
 
 			if not db_prod_size_entry:
@@ -209,7 +222,7 @@ def store_product_sizes(site_name, product_info, xml_timestamp):
 		param_price_old = int(get_child(product_info, "price_old"))
 
 		db_prod_size_entry = session.query(FeedProdStore) \
-			.filter_by(code=code, param_name=param_name) \
+			.filter_by(site=site_name, code=code, param_name=param_name) \
 			.first()
 
 		if not db_prod_size_entry:

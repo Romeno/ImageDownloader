@@ -33,6 +33,9 @@ def main():
         id_db.connect(db_username, db_password, db_host, db_name)
 
         sites = id_db.get_sites()
+        sites = [site.name for site in sites]
+
+        id_db.disconnect()
 
         pp = SilentProcessPool(poolLength=process_pool_size, worker=start_downloader_instance,
                                data=zip(sites, [base_path] * len(sites)))

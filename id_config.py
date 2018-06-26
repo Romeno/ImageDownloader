@@ -13,5 +13,5 @@ process_pool_size = 16
 
 runner_log_name = 'errors_runner.log'
 
-base_worker_logger_name = "errors_worker"
+base_worker_logger_name = "errors_worker_"
 
