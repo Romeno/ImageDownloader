@@ -96,7 +96,7 @@ def get_sites():
 	return session.query(Site).all()
 
 
-def store_product_data(site, product, xml_timestamp, small_img_path, large_img_path):
+def store_product_data(site_name, product, xml_timestamp, small_img_path, large_img_path):
 	code = get_child(product, "code")
 	db_prod = session.query(FeedStore).filter_by(code=code).first()
 
@@ -110,7 +110,7 @@ def store_product_data(site, product, xml_timestamp, small_img_path, large_img_p
 							currency=get_child(product, "currency"),
 							img_small=get_child(product, "img_small"),
 							img_large=get_child(product, "img_large"),
-							site=site.name,
+							site=site_name,
 							time_xml=xml_timestamp,
 							path_img_small=small_img_path,
 							path_img_large=large_img_path)
@@ -126,7 +126,7 @@ def store_product_data(site, product, xml_timestamp, small_img_path, large_img_p
 		db_prod.currency = get_child(product, "currency")
 		db_prod.img_small = get_child(product, "img_small")
 		db_prod.img_large = get_child(product, "img_large")
-		db_prod.site = site.name
+		db_prod.site = site_name
 		db_prod.time_xml = xml_timestamp
 		db_prod.time_load = datetime.datetime.now()
 		db_prod.path_img_small = small_img_path
@@ -134,7 +134,7 @@ def store_product_data(site, product, xml_timestamp, small_img_path, large_img_p
 		session.commit()
 
 
-def store_product_sizes(site, product_info, xml_timestamp):
+def store_product_sizes(site_name, product_info, xml_timestamp):
 	code = get_child(product_info, "code")
 
 	params = product_info.find("params")
@@ -174,7 +174,7 @@ def store_product_sizes(site, product_info, xml_timestamp):
 										url=get_child(product_info, "url"),
 										price=int(get_child(product_info, "price")),
 										price_old=int(get_child(product_info, "price_old")),
-										site=site.name,
+										site=site_name,
 										time_xml=xml_timestamp,
 										param_name=param_name,
 										param_available=param_available,
@@ -190,7 +190,7 @@ def store_product_sizes(site, product_info, xml_timestamp):
 				db_prod_size_entry.url = get_child(product_info, "url")
 				db_prod_size_entry.price=int(get_child(product_info, "price"))
 				db_prod_size_entry.price_old=int(get_child(product_info, "price_old"))
-				db_prod_size_entry.site=site.name
+				db_prod_size_entry.site=site_name
 				db_prod_size_entry.time_xml=xml_timestamp
 				db_prod_size_entry.time_load=datetime.datetime.now()
 				db_prod_size_entry.param_name=param_name
@@ -215,7 +215,7 @@ def store_product_sizes(site, product_info, xml_timestamp):
 											   url = get_child(product_info, "url"),
 											   price=int(get_child(product_info, "price")),
 											   price_old=int(get_child(product_info, "price_old")),
-											   site=site.name,
+											   site=site_name,
 											   time_xml=xml_timestamp,
 											   param_name=param_name,
 											   param_available=param_available,
@@ -231,7 +231,7 @@ def store_product_sizes(site, product_info, xml_timestamp):
 			db_prod_size_entry.url = get_child(product_info, "url")
 			db_prod_size_entry.price = int(get_child(product_info, "price"))
 			db_prod_size_entry.price_old = int(get_child(product_info, "price_old"))
-			db_prod_size_entry.site = site.name
+			db_prod_size_entry.site = site_name
 			db_prod_size_entry.time_xml = xml_timestamp
 			db_prod_size_entry.time_load = datetime.datetime.now()
 			db_prod_size_entry.param_name = param_name
