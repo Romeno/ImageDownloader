@@ -96,6 +96,10 @@ def get_sites():
 	return session.query(Site).all()
 
 
+def get_product_codes_for_site(site_name):
+	return session.query(FeedStore.code).filter_by(site=site_name).all()
+
+
 def store_product_data(site_name, product, xml_timestamp, small_img_path, large_img_path):
 	code = get_child(product, "code")
 	db_prod = session.query(FeedStore).filter_by(code=code).first()

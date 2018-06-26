@@ -9,7 +9,7 @@ crawl_delay = 0.15
 
 base_path = "i:/crm_root"  # do NOT include trailing "/"
 
-process_pool_size = 1
+process_pool_size = 16
 
 runner_log_name = 'errors_runner.log'
 
