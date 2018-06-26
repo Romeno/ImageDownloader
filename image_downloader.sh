@@ -6,6 +6,7 @@ for pid in $(pidof -x image_downloader.sh); do
 done
 
 for pid in $(pidof -x image_downloader.py); do
+      pkill -9 -P $pid
       kill -9 $pid
 done
 
