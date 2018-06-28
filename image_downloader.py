@@ -1,4 +1,5 @@
 #!/usr/bin/python3.5
+# -*- coding: utf-8 -*-
 import logging
 from utils.process import SilentProcessPool
 
@@ -10,49 +11,49 @@ import id_common
 
 
 def start_downloader_instance(q):
-    site, base_path = q
-    try:
-        image_downloader = id_worker.ImageDownloader(site, base_path)
-        image_downloader.run()
-    except KeyboardInterrupt:
-        raise
-    except:
-        pass
+	site, base_path = q
+	try:
+		image_downloader = id_worker.ImageDownloader(site, base_path)
+		image_downloader.run()
+	except KeyboardInterrupt:
+		raise
+	except:
+		pass
 
 # end of StartCrawler
 
 
 def main():
-    from id_config import db_username, db_password, db_host, db_name, base_path, process_pool_size, runner_log_name
+	from id_config import db_username, db_password, db_host, db_name, base_path, process_pool_size, runner_log_name
 
-    id_common.init_logger(runner_log_name)
+	id_common.init_logger(runner_log_name)
 
-    logger = logging.getLogger(runner_log_name)
+	logger = logging.getLogger(runner_log_name)
 
-    try:
-        id_db.connect(db_username, db_password, db_host, db_name)
+	try:
+		id_db.connect(db_username, db_password, db_host, db_name)
 
-        sites = id_db.get_sites()
-        sites = [site.name for site in sites]
+		sites = id_db.get_sites()
+		sites = [site.name for site in sites]
 
-        id_db.disconnect()
+		id_db.disconnect()
 
-        pp = SilentProcessPool(poolLength=process_pool_size, worker=start_downloader_instance,
-                               data=zip(sites, [base_path] * len(sites)))
-        pp.logger_name = runner_log_name
-        pp.Run()
+		pp = SilentProcessPool(poolLength=process_pool_size, worker=start_downloader_instance,
+							   data=zip(sites, [base_path] * len(sites)))
+		pp.logger_name = runner_log_name
+		pp.Run()
 
-        logger.info("Finished!!!")
+		logger.info("Finished!!!")
 
-    except Exception as e:
-        logger.exception("Exception during {} run".format(program_name))
-        raise
+	except Exception as e:
+		logger.exception("Exception during {} run".format(program_name))
+		raise
 
 # end of main
 
 
 if __name__ == "__main__":
-    main()
+	main()
 
 
 
