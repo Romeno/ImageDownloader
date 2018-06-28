@@ -41,7 +41,7 @@ def init_logger(filename):
 				'formatter': 'f',
 				'level': 'DEBUG',
 				'filename': filename,
-				'maxBytes': 10485760,
+				'maxBytes': 1048576,
 				'backupCount': 20,
 				'encoding': 'utf8'
 			}
