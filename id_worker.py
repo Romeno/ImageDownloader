@@ -104,7 +104,7 @@ class ImageDownloader:
 
 		try:
 			time.sleep(crawl_delay)
-			resp = requests.get("http://{}/feedxml_crm.php?code={}".format(site_name, code), verify=False)
+			resp = requests.get("http://{}/feedxml_crm.php?code='{}'".format(site_name, code), verify=False)
 			if resp.ok:
 				root = etree.fromstring(resp.content)
 				if len(root) == 0 or len(root[0]) == 0:
